@@ -75,3 +75,23 @@ let userPreferences: any = {
 
 userPreferences.setTheme(localStorage.getItem('theme'));
 
+let modules: any = {};
+
+fetch('autoload_modules', { method: 'GET' })
+    .then(response => response.json())
+    .then(json => {
+        json.modules.forEach((module: string) => {
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = `module/${module}.js`;
+            document.body.appendChild(script);
+        });
+    })
+    .catch(error => console.error(error))
+    .finally(() => {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'page.js';
+        document.body.appendChild(script);
+    });
+

@@ -6,15 +6,28 @@ import path from 'path';
 const basePath = path.join(__dirname, '../../..');
 
 const staticPath = path.join(basePath, 'static');
-const scriptPath = path.join(basePath, '.build/js/page');
+const scriptPath = path.join(basePath, '.build/js/client');
+const modulePath = path.join(basePath, '.build/js/modules');
+const privateModulePath = path.join(basePath, '.build/js/modules');
 
 const mainPath = path.join(staticPath, 'main.html');
+
+const permittedModules = (() => {
+    const modules = process.env.PERMIT_MODULES || '';
+    return modules.split(',').map(s => s.trim()).filter(Boolean);
+})();
+
+const moduleIsPermitted = permittedModules.includes('*') ?
+    (module: string) => true :
+    (module: string) => permittedModules.includes(module);
+
+console.log(permittedModules);
 
 http.createServer((req, res: http.ServerResponse) => {
     console.log(`\nRequest for ${req.url!}`);
 
-    const tryFolder = (folder: any) => {
-        var requestedPath = path.join(folder, req.url!);
+    const tryFolder = (requestUrl: string, folder: any) => {
+        var requestedPath = path.join(folder, requestUrl);
         if (fs.existsSync(requestedPath) && fs.lstatSync(requestedPath).isFile()) {
             serveFile(requestedPath, res);
             return true;
@@ -29,8 +42,23 @@ http.createServer((req, res: http.ServerResponse) => {
         return;
     }
 
-    if (tryFolder(staticPath)) return;
-    if (tryFolder(scriptPath)) return;
+    if (tryFolder(req.url!, staticPath)) return;
+    if (tryFolder(req.url!, scriptPath)) return;
+
+    if (req.url!.startsWith('/module/')) {
+        const strippedUrl = req.url!.substring(8);
+
+        const noExtension = path.basename(strippedUrl, path.extname(strippedUrl));
+
+        if (!moduleIsPermitted(noExtension)) {
+            res.writeHead(403);
+            res.end();
+            return;
+        }
+
+        if (tryFolder(strippedUrl, privateModulePath)) return;
+        if (tryFolder(strippedUrl, modulePath)) return;
+    }
 
     if (req.url! === '/cmd_build' && process.env.DEVELOPMENT_SERVER === 'true') {
         console.log('\n[== Rebuilding Application ==]\n');
@@ -55,6 +83,15 @@ http.createServer((req, res: http.ServerResponse) => {
             console.log('Not restarting.');
         }
 
+        return;
+    }
+
+    if (req.url! === '/autoload_modules') {
+        const modules = process.env.AUTOLOAD_MODULES || '';
+        const modulesArray = modules.split(',').filter(Boolean);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ modules: modulesArray }));
         return;
     }
 

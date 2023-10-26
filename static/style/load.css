@@ -60,10 +60,10 @@
 }
 
 .loader-orb[class*=" 2"] {
-    width: 50px;
-    height: 50px;
-    left: -180px;
-    border-width: 0.2em;
+    width: 55px;
+    height: 55px;
+    left: -200px;
+    border-width: 0.15em;
     transform: translate(-50%, -50%);
 }
 

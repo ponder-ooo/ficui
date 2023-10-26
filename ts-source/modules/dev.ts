@@ -1,18 +1,5 @@
 
-setTimeout(finishedLoading, 1000);
-
-var mainInput = document.createElement('textarea');
-
-mainInput.id = 'mainInput';
-mainInput.style.width = '90px';
-mainInput.style.height = '90px';
-document.body.appendChild(mainInput);
-
 document.body.addEventListener('keydown', (event) => {
-    if (event.key === 'F12') {
-        return;
-    }
-
     if (event.key === 'R' && event.ctrlKey) {
         event.preventDefault();
         fetch('/cmd_build', { method: 'GET' })
@@ -37,4 +24,10 @@ document.body.addEventListener('keydown', (event) => {
         return;
     }
 });
+
+modules.dev = {
+    run: () => {
+        console.log('running dev module');
+    }
+}
 
