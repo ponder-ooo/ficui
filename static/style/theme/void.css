@@ -1,0 +1,7 @@
+:root {
+    --main-background: #112233;
+    --main-solid: #EEDDEE;
+    --main-transparent: #EEDDEEDD;
+    --main-solid-content: #333333;
+    --code-font: Consolas, 'Fira Code', Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}

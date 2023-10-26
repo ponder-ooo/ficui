@@ -1,0 +1,21 @@
+:root {
+    font-size: 1em;
+
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    line-height: 1em;
+
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+pre {
+    font-family: var(--code-font);
+}
