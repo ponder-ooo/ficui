@@ -95,6 +95,16 @@ http.createServer((req, res: http.ServerResponse) => {
         return;
     }
 
+    if (req.url! === '/autorun_modules') {
+        const modules = process.env.AUTORUN_MODULES || '';
+        const modulesArray = modules.split(',').filter(Boolean);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ modules: modulesArray }));
+        return;
+    }
+
+
     res.end();
 })
 .listen(8080, () => {

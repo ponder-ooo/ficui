@@ -1,4 +1,39 @@
 
+let userPreferences: any = {
+    setTheme: (theme: string | null) => {
+        if (theme === null) theme = 'void';
+        userPreferences.theme = theme;
+        localStorage.setItem('theme', theme);
+        const themeLink = document.getElementById('themeLink') as HTMLLinkElement;
+        themeLink!.href = `style/theme/${theme}.css`;
+    },
+
+    setLoadButton: (show: string | null) => {
+        if (show === null) show = 'show';
+        userPreferences.loadButton = show;
+        localStorage.setItem('loadButton', show);
+    },
+
+    toggleTheme: () => {
+        if (userPreferences.theme === 'void') {
+            userPreferences.setTheme('parchment');
+        } else {
+            userPreferences.setTheme('void');
+        }
+    },
+
+    toggleLoadButton: () => {
+        if (userPreferences.loadButton === 'show') {
+            userPreferences.setLoadButton('hide');
+        } else {
+            userPreferences.setLoadButton('show');
+        }
+    }
+};
+
+userPreferences.setTheme(localStorage.getItem('theme'));
+userPreferences.setLoadButton(localStorage.getItem('loadButton'));
+
 // Put a loading animation on the page and return a function for removing it.
 let finishedLoading = (() => {
     let loader = document.createElement('div');
@@ -27,7 +62,7 @@ let finishedLoading = (() => {
 
     let initialElements = Array.prototype.slice.call(document.body.children);
 
-    let removeLoader = () => {
+    let removeLoader = (continuation: any) => {
         loader.style.opacity = '0';
         button.style.opacity = '0';
         orb0.style.left = '50%';
@@ -39,41 +74,19 @@ let finishedLoading = (() => {
                 document.body.removeChild(element);
             });
             finishedLoading = () => console.warn('finishedLoading should not be called twice.');
+            continuation();
         }, 1500);
+
     };
 
-    button.addEventListener('click', (event) => removeLoader());
-
-    let noLoadButton = false;
-
-    return noLoadButton ? removeLoader : () => {
+    return userPreferences.loadButton === 'hide' ? removeLoader : (continuation: any) => {
         setTimeout(() => {
             button.style.opacity = '1';
+            button.addEventListener('click', (event) => removeLoader(continuation));
         }, 100);
         button.style.display = 'initial';
     };
 })();
-
-
-let userPreferences: any = {
-    setTheme: (theme: string | null) => {
-        if (theme === null) theme = 'void';
-        userPreferences.theme = theme;
-        localStorage.setItem('theme', theme);
-        const themeLink = document.getElementById('themeLink') as HTMLLinkElement;
-        themeLink!.href = `style/theme/${theme}.css`;
-    },
-
-    toggleTheme: () => {
-        if (userPreferences.theme === 'void') {
-            userPreferences.setTheme('parchment');
-        } else {
-            userPreferences.setTheme('void');
-        }
-    }
-};
-
-userPreferences.setTheme(localStorage.getItem('theme'));
 
 let modules: any = {};
 

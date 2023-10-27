@@ -19,3 +19,24 @@
 pre {
     font-family: var(--code-font);
 }
+
+.nothing {
+    position: absolute;
+    font-family: var(--code-font);
+    color: var(--main-solid);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 4s infinite linear;
+    animation-delay: 2.5s;
+}
+
+@keyframes spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}

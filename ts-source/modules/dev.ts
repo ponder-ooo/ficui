@@ -23,11 +23,17 @@ document.body.addEventListener('keydown', (event) => {
         userPreferences.toggleTheme();
         return;
     }
+
+    if (event.key === 'l' && event.ctrlKey) {
+        event.preventDefault();
+        userPreferences.toggleLoadButton();
+        return;
+    }
 });
 
 modules.dev = {
     run: () => {
-        console.log('running dev module');
+
     }
 }
 
