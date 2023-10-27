@@ -1,5 +1,6 @@
 
 import http from 'http';
+import https from 'https';
 import fs from 'fs';
 import path from 'path';
 
@@ -21,9 +22,35 @@ const moduleIsPermitted = permittedModules.includes('*') ?
     (module: string) => true :
     (module: string) => permittedModules.includes(module);
 
-console.log(permittedModules);
+const useSsl = process.env.CERT_PATH && process.env.CERT_KEY_PATH && process.env.DEVELOPMENT_SERVER !== 'true';
 
-http.createServer((req, res: http.ServerResponse) => {
+const httpsOptions = useSsl ? {
+    key: fs.readFileSync(process.env.CERT_KEY_PATH!),
+    cert: fs.readFileSync(process.env.CERT_PATH!)
+} : {};
+
+const createServer = (f: (req: any, res: http.ServerResponse) => void) => {
+    if (useSsl) {
+        https.createServer(httpsOptions, f)
+            .listen(process.env.PORT_HTTPS, () => {
+                console.log(`Listening on ${process.env.PORT_HTTPS} with SSL.`);
+            });
+
+        http.createServer((req, res) => {
+            res.writeHead(301, { 'Location': 'https://' + req.headers['host'] + req.url });
+            res.end();
+        }).listen(process.env.PORT_HTTP, () => {
+            console.log(`Redirecting from ${process.env.PORT_HTTP}.`);
+        });
+    } else {
+        http.createServer(f)
+            .listen(process.env.PORT_HTTP, () => {
+                console.log(`Listening on ${process.env.PORT_HTTP}.`);
+            });
+    }
+};
+
+createServer((req, res: http.ServerResponse) => {
     console.log(`\nRequest for ${req.url!}`);
 
     const tryFolder = (requestUrl: string, folder: any) => {
@@ -106,9 +133,6 @@ http.createServer((req, res: http.ServerResponse) => {
 
 
     res.end();
-})
-.listen(8080, () => {
-    console.log(`\nLaunching Server\n\nPID ${process.pid} / PORT 8080\n`);
 });
 
 function serveFile(filePath: string, res: http.ServerResponse): void {
