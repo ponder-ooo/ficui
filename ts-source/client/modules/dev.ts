@@ -31,9 +31,3 @@ document.body.addEventListener('keydown', (event) => {
     }
 });
 
-modules.dev = {
-    run: () => {
-
-    }
-}
-

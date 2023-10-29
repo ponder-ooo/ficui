@@ -1,3 +1,4 @@
+
 {
   "name": "ficui",
   "version": "0.0.0",
@@ -5,7 +6,7 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --build",
+    "build": "tsc --build ./ts-source",
     "debug": "ts-node ./ts-source/server/main.ts",
     "built": "node ./.build/js/server/main.js"
   },
@@ -18,3 +19,4 @@
     "typescript": "^5.2.2"
   }
 }
+

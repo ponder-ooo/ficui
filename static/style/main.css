@@ -1,3 +1,4 @@
+
 :root {
     font-size: 1em;
 
@@ -20,6 +21,20 @@ pre {
     font-family: var(--code-font);
 }
 
+button {
+    border: none;
+    border-radius: 0.5em;
+    height: 1.5em;
+    background-color: var(--main-solid);
+    color: var(--main-solid-content);
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+p {
+    color: var(--main-solid);
+}
+
 .nothing {
     position: absolute;
     font-family: var(--code-font);
@@ -31,6 +46,17 @@ pre {
     animation-delay: 2.5s;
 }
 
+.theme-toggle {
+    position: absolute;
+    bottom: 2em;
+    right: 2em;
+    border: none;
+    border-radius: 50%;
+    width: 4em;
+    height: 4em;
+    background-color: var(--main-solid);
+}
+
 @keyframes spin {
     from {
         transform: translate(-50%, -50%) rotate(0deg);
@@ -40,3 +66,4 @@ pre {
         transform: translate(-50%, -50%) rotate(360deg);
     }
 }
+

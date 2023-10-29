@@ -1,4 +1,6 @@
 
+let m: any = {};
+
 let userPreferences: any = {
     setTheme: (theme: string | null) => {
         if (theme === null) theme = 'void';
@@ -88,23 +90,34 @@ let finishedLoading = (() => {
     };
 })();
 
-let modules: any = {};
+let loadModule = async (module: string, overwrite: boolean = false) => {
+    if (m[module] !== undefined && !overwrite) {
+        console.warn(`Module ${module} is already loaded. Aborting extraneous load.`);
+        return;
+    }
+
+    m[module] = {...await import(`./module/${module}.js`)};
+};
 
 fetch('autoload_modules', { method: 'GET' })
     .then(response => response.json())
     .then(json => {
-        json.modules.forEach((module: string) => {
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = `module/${module}.js`;
-            document.body.appendChild(script);
+        json.modules.reduce(
+            (acc: any, module: any) => acc.then(async () => { m[module] = {...await import(`./module/${module}.js`)} }),
+            Promise.resolve()
+        ).finally(() => {
+            finishedLoading(() => {
+                fetch('autorun_modules', { method: 'GET' })
+                    .then(response => response.json())
+                    .then(json => {
+                        json.modules.forEach((module: string) => {
+                            m[module].run();
+                        });
+                    })
+                    .catch(console.error)
+            });
+
         });
     })
-    .catch(error => console.error(error))
-    .finally(() => {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = 'page.js';
-        document.body.appendChild(script);
-    });
+    .catch(console.error)
 
